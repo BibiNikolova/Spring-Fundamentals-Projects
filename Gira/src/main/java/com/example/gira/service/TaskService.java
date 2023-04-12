@@ -45,79 +45,53 @@ public class TaskService {
                 .progress(Progress.OPEN)
                 .dueDate(createTaskDTO.getDueDate())
                 .classification(byName)
+                .user(getLoggedUser(loggedUser))
                 .build();
 
         this.taskRepo.save(task);
 
         return true;
     }
-//
-//    private TaskViewDTO viewTaskDTO(Task task) {
-//
-//        return TaskViewDTO.builder()
-//                .id(task.getId())
-//                .description(task.getDescription())
-//                .user(task.getUser())
-//                .price(task.getPrice())
-//                .condition(task.getCondition())
-//                .build();
-//    }
-//
-//    public Set<OfferViewDTO> getOwnOffers() {
-//
-//        return getLoggedUser(loggedUser)
-//                .getOffers()
-//                .stream()
-//                .map(this::viewOfferDTO)
-//                .collect(Collectors.toSet());
-//    }
-//
-//    public Set<OfferViewDTO> getOtherOffers() {
-//
-//        Set<Offer> forSale = this.offerRepo.findAllByUserNot(getLoggedUser(loggedUser));
-//
-//        return forSale
-//                .stream()
-//                .map(this::viewOfferDTO)
-//                .collect(Collectors.toSet());
-//    }
-//
-//    public void removeOffer(Long id) {
-//
-//        Offer byId = this.offerRepo.findById(id).orElseThrow();
-//
-//        this.offerRepo.delete(byId);
-//    }
-//
-//    public Set<OfferViewDTO> boughtOffers() {
-//
-//        return getLoggedUser(loggedUser)
-//                .getBoughtOffers()
-//                .stream()
-//                .map(this::viewOfferDTO)
-//                .collect(Collectors.toSet());
-//    }
-//
-//    public void buyNow(Long offerId) {
-//
-//        Offer byId = this.offerRepo.findById(offerId).orElseThrow();
-//
-//        User buyer = getLoggedUser(loggedUser);
-//        buyer.getBoughtOffers().add(byId);
-//        buyer.setBoughtOffers(buyer.getBoughtOffers());
-//
-//        byId.setUser(null);
-//
-//        this.userRepo.save(buyer);
-//        this.offerRepo.save(byId);
 
-//    }
+    private TaskViewDTO viewTaskDTO(Task task) {
 
+        return TaskViewDTO.builder()
+                .id(task.getId())
+                .name(task.getName())
+                .user(task.getUser())
+                .classificationName(task.getClassification().getClassificationName())
+                .dueDate(task.getDueDate())
+                .progress(task.getProgress())
+                .build();
+    }
+
+    public Set<TaskViewDTO> getTasks() {
+
+        return this.taskRepo.findAll()
+                .stream()
+                .map(this::viewTaskDTO)
+                .collect(Collectors.toSet());
+    }
+
+    public void changeProgress(Long id) {
+        Task task = this.taskRepo.findById(id).orElseThrow();
+
+        switch (task.getProgress()) {
+            case OPEN -> {
+                task.setProgress(Progress.IN_PROGRESS);
+                this.taskRepo.save(task);
+            }
+            case IN_PROGRESS -> {
+                task.setProgress(Progress.COMPLETED);
+                this.taskRepo.save(task);
+            }
+            case COMPLETED -> this.taskRepo.delete(task);
+        }
+    }
 
     public User getLoggedUser(LoggedUser loggedUser) {
         return this.userRepo.findById(loggedUser.getId()).orElseThrow();
     }
-
 
 }
 

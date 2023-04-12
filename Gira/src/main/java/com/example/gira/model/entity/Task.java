@@ -17,13 +17,12 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+    private Long id;
     @Column(unique = true, nullable = false)
     private String name;
     @Column(nullable = false)
     private String description;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private Progress progress ;
     @Column(nullable = false)
     private LocalDate dueDate;
@@ -31,6 +30,5 @@ public class Task {
     private Classification classification;
     @ManyToOne
     private User user;
-
 
 }

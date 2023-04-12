@@ -1,14 +1,17 @@
 package com.example.gira.controller;
 
 import com.example.gira.model.dto.CreateTaskDTO;
+import com.example.gira.model.dto.TaskViewDTO;
 import com.example.gira.service.AuthService;
 import com.example.gira.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -30,7 +33,7 @@ public class TaskController {
         return new CreateTaskDTO();
     }
 
-    @GetMapping("/task/add")
+    @GetMapping("/tasks/add")
     public String tasks() {
 
         if (!this.authService.isLoggedIn()) {
@@ -38,9 +41,8 @@ public class TaskController {
         }
         return "add-task";
     }
-
-    @PostMapping("/task/add")
-    public String offers(@Valid CreateTaskDTO createTaskDTO,
+    @PostMapping("/tasks/add")
+    public String tasks(@Valid CreateTaskDTO createTaskDTO,
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes) {
 
@@ -53,8 +55,11 @@ public class TaskController {
             redirectAttributes.addFlashAttribute(
                     "org.springframework.validation.BindingResult.createTaskDTO)", bindingResult);
 
-            return "redirect:/task/add";
+            return "redirect:/tasks/add";
         }
         return "redirect:/home";
     }
+
+
+
 }
