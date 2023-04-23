@@ -12,7 +12,7 @@
             <h6 class=" bg-gray text-dark  mb-0 mt-0" th:text="|Username: ${@loggedUser.getName()}|">Username:
                 {loggedUsername}</h6>
             <div class="bg-dark rounded m-auto" style="height: 67vh; overflow: auto">
-                <th:block th:each="myT: ${ownTasks}">
+                <th:block th:each="myT: ${assignedTasks}">
                     <ul class="list-group list-group-horizontal text-dark">
                         <li class="list-group-item bg-warning">
                             <table>
@@ -39,10 +39,10 @@
 
         <div class="col-5">
             <h3 class="mySticky bg-gray text-dark  mb-0 mt-2">All Available Tasks</h3>
-            <h6 class="mySticky bg-gray text-dark  mb-0 mt-0" th:text="|*{others.size()} Tasks|">{totalUnassignedTasks}
+            <h6 class="mySticky bg-gray text-dark  mb-0 mt-0" th:text="|*{tasks.size()} Tasks|">{totalUnassignedTasks}
                 Tasks</h6>
             <div class="bg-dark rounded m-auto" style="height: 67vh; overflow: auto">
-                <th:block th:each="p: ${others}">
+                <th:block th:each="p: ${tasks}">
                     <ul class="list-group list-group-horizontal text-dark">
                         <li class="list-group-item bg-warning">
                             <table>

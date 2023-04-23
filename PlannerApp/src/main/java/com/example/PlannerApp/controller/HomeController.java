@@ -46,8 +46,8 @@ public class HomeController {
             return "redirect:/";
         }
 
-        model.addAttribute("ownTasks", this.taskService.getOwnTasks());
-        model.addAttribute("others", this.taskService.getOtherTasks());
+        model.addAttribute("assignedTasks", this.taskService.getAssignedTasks());
+        model.addAttribute("tasks", this.taskService.getTasks());
 
         return "home";
     }

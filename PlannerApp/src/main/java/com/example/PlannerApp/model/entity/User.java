@@ -27,6 +27,13 @@ public class User {
     @OneToMany(fetch = FetchType.EAGER)
     private Set<Task> assignedTasks;
 
+    public void addTask(Task addedTask) {
+        this.assignedTasks.add(addedTask);
+    }
+
+    public void removeTask(Long removedTask) {
+       this.assignedTasks.removeIf(t-> t.getId().equals(removedTask));
+    }
 
 }
 

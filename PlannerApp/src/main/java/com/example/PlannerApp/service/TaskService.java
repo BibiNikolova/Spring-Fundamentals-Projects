@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
-
     private final TaskRepo taskRepo;
 
     private final UserRepo userRepo;
@@ -42,7 +41,6 @@ public class TaskService {
                 .description(createTaskDTO.getDescription())
                 .dueDate(createTaskDTO.getDueDate())
                 .priority(byName)
-                .user(getLoggedUser(loggedUser))
                 .build();
 
         this.taskRepo.save(task);
@@ -60,26 +58,21 @@ public class TaskService {
                 .build();
     }
 
-    public Set<TaskViewDTO> getOwnTasks() {
+    public Set<TaskViewDTO> getAssignedTasks() {
 
-        Set<Task> ownUsers = this.taskRepo.findAllByUser(getLoggedUser(loggedUser));
+        Set<Task> assignedByUser = this.taskRepo.findAllByUser(getLoggedUser(loggedUser));
 
-        return ownUsers
+        return assignedByUser
                 .stream()
                 .map(this::viewTaskDTO)
                 .collect(Collectors.toSet());
     }
 
-    public Set<TaskViewDTO> getOtherTasks() {
-
-        Set<Task> inProgress = this.taskRepo.findAllByUserNot(getLoggedUser(loggedUser));
+    public Set<TaskViewDTO> getTasks() {
 
         Set<Task> nullable = this.taskRepo.findAllByUser(null);
 
-        inProgress.addAll(nullable);
-
-
-        return inProgress
+        return nullable
                 .stream()
                 .map(this::viewTaskDTO)
                 .collect(Collectors.toSet());
@@ -89,7 +82,14 @@ public class TaskService {
 
         Task byId = this.taskRepo.findById(id).orElseThrow();
 
+        User assignor = getLoggedUser(loggedUser);
+        assignor.removeTask(id);
+
+        byId.setUser(null);
+
+        this.userRepo.save(assignor);
         this.taskRepo.delete(byId);
+
     }
 
     public void assign(Long taskId) {
@@ -97,8 +97,7 @@ public class TaskService {
         Task byId = this.taskRepo.findById(taskId).orElseThrow();
 
         User assignor = getLoggedUser(loggedUser);
-        assignor.getAssignedTasks().add(byId);
-        assignor.setAssignedTasks(assignor.getAssignedTasks());
+        assignor.addTask(byId);
 
         byId.setUser(assignor);
 
@@ -112,8 +111,7 @@ public class TaskService {
         Task byId = this.taskRepo.findById(taskId).orElseThrow();
 
         User assignor = getLoggedUser(loggedUser);
-        assignor.getAssignedTasks().remove(byId);
-        assignor.setAssignedTasks(assignor.getAssignedTasks());
+        assignor.removeTask(taskId);
 
         byId.setUser(null);
 
