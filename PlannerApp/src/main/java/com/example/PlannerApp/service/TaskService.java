@@ -37,11 +37,13 @@ public class TaskService {
     public boolean create(CreateTaskDTO createTaskDTO) {
 
         Priority byName = this.priorityRepo.findByPriorityName(createTaskDTO.getPriorityName()).orElseThrow();
+
         Task task = Task.builder()
                 .description(createTaskDTO.getDescription())
                 .dueDate(createTaskDTO.getDueDate())
                 .priority(byName)
                 .build();
+
 
         this.taskRepo.save(task);
 

@@ -5,7 +5,6 @@ import com.example.PlannerApp.model.dto.CreateTaskDTO;
 import com.example.PlannerApp.service.AuthService;
 import com.example.PlannerApp.service.TaskService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +19,6 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @Autowired
     public TaskController(AuthService authService, TaskService taskService) {
         this.authService = authService;
         this.taskService = taskService;
