@@ -1,11 +1,14 @@
 package com.example.coffeeshopapp.controller;
 
+import com.example.coffeeshopapp.model.dto.EmployeesOrdersDTO;
+import com.example.coffeeshopapp.model.dto.OrdersByCategory;
 import com.example.coffeeshopapp.service.AuthService;
 import com.example.coffeeshopapp.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
@@ -13,16 +16,16 @@ public class HomeController {
 
     private final OrderService orderService;
     private final AuthService authService;
-//
-//    @ModelAttribute("PlaylistDTO")
-//    public PlaylistDTO initPlaylistVisualForm() {
-//        return new PlaylistDTO();
-//    }
-//    @ModelAttribute("SongsByGenreDTO")
-//    public SongsByGenreDTO initByGenre() {
-//        return  new SongsByGenreDTO();
-//    }
-//
+
+    @ModelAttribute("OrdersByCategory ")
+    public OrdersByCategory initOrders() {
+        return new OrdersByCategory();
+    }
+    @ModelAttribute("EmployeesOrdersDTO")
+    public EmployeesOrdersDTO initByEmployee() {
+        return  new EmployeesOrdersDTO();
+    }
+
     @Autowired
     public HomeController(OrderService orderService, AuthService authService) {
         this.orderService = orderService;
@@ -46,9 +49,9 @@ public class HomeController {
             return "redirect:/";
         }
 
-//        model.addAttribute("songs", this.songService.getSongs());
-//        model.addAttribute("totalTime", this.songService.totalTimePlaylist());
-//        model.addAttribute("playlist", this.songService.getPlaylist());
+        model.addAttribute("allOrders", this.orderService.getAllOrders());
+        model.addAttribute("timeToPrepare", this.orderService.getTotalTimeToPrepare());
+        model.addAttribute("byEmployee", this.orderService.getOrdersByEmployee());
 
         return "home";
 
@@ -60,20 +63,20 @@ public class HomeController {
         if (!this.authService.isLoggedIn()) {
             return "redirect:/";
         }
-//
-//        this.orderService.addSongToPlaylist(id);
+
+        this.orderService.addOrder(id);
         return "redirect:/home";
     }
-//
-//    @GetMapping("/home/removeAll/{id}")
-//    public String removeAllPlaylist(@PathVariable Long id) {
-//
-//        if (!this.authService.isLoggedIn()) {
-//            return "redirect:/";
-//        }
-//
-//        this.songService.removeAllSongsFromPlaylist();
-//        return "redirect:/home";
-//    }
+
+    @GetMapping("/orders/remove/{id}")
+    public String getReady(@PathVariable Long id) {
+
+        if (!this.authService.isLoggedIn()) {
+            return "redirect:/";
+        }
+
+        this.orderService.removeOrder(id);
+        return "redirect:/home";
+    }
 
 }

@@ -1,9 +1,8 @@
 package com.example.coffeeshopapp.model.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.PastOrPresent;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

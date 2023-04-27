@@ -2,7 +2,7 @@ package com.example.coffeeshopapp.model.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 
 @Getter
@@ -28,5 +28,9 @@ public class User {
     private String email;
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Order> orders;
+
+    public void addOrder(Order order) {
+        this.orders.add(order);
+    }
 
 }

@@ -2,14 +2,21 @@ package com.example.coffeeshopapp.service;
 
 
 import com.example.coffeeshopapp.model.dto.CreateOrderDTO;
+import com.example.coffeeshopapp.model.dto.EmployeesOrdersDTO;
+import com.example.coffeeshopapp.model.dto.OrderViewDTO;
+import com.example.coffeeshopapp.model.dto.OrdersByCategory;
 import com.example.coffeeshopapp.model.entity.Category;
 import com.example.coffeeshopapp.model.entity.Order;
 import com.example.coffeeshopapp.model.entity.User;
+import com.example.coffeeshopapp.model.enums.CategoryName;
 import com.example.coffeeshopapp.repository.CategoryRepository;
 import com.example.coffeeshopapp.repository.OrderRepository;
 import com.example.coffeeshopapp.repository.UserRepository;
 import com.example.coffeeshopapp.session.LoggedUser;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -44,86 +51,90 @@ public class OrderService {
 
         return true;
     }
-//
-//
-//    private SongDTO viewSongDTO(Song song) {
-//        SongDTO songDTO = new SongDTO();
-//        songDTO.setId(song.getId());
-//        songDTO.setDuration(inMinutes(song.getDuration()));
-//        songDTO.setPerformer(song.getPerformer());
-//        songDTO.setTitle(song.getTitle());
-//        songDTO.setStyle(song.getStyle());
-//        return songDTO;
-//    }
-//
-//    public Set<SongDTO> getPlaylist() {
-//
-//        return this.songRepository.findByUserId(loggedUser.getId())
-//                .stream()
-//                .map(this::viewSongDTO)
-//                .collect(Collectors.toSet());
-//    }
-//
-//    public String totalTimePlaylist() {
-//        long sum = this.songRepository.findByUserId(loggedUser.getId())
-//                .stream()
-//                .mapToLong(Song::getDuration)
-//                .sum();
-//        return inMinutes(sum);
-//    }
-//
-//    public Set<SongDTO> getSongsByStyle(Style style) {
-//        return this.songRepository.findByStyle(style)
-//                .stream()
-//                .map(this::viewSongDTO)
-//                .collect(Collectors.toSet());
-//    }
-//
-//    public SongsByGenreDTO getSongs() {
-//
-//        SongsByGenreDTO songs = new SongsByGenreDTO();
-//        songs.setPopSongs(getSongsByStyle(extracted(StyleName.POP)));
-//        songs.setJazzSongs(getSongsByStyle(extracted(StyleName.JAZZ)));
-//        songs.setRockSongs(getSongsByStyle(extracted(StyleName.ROCK)));
-//        return songs;
-//    }
-//
-//    public void addSongToPlaylist(Long songId) {
-//
-//        User user = getUser(loggedUser);
-//        Song song = this.songRepository.findById(songId).orElseThrow();
-//
-//        user.getPlaylist().add(song);
-//
-//        user.setPlaylist(user.getPlaylist());
-//
-//        this.userRepository.save(user);
-//    }
-//
-//    public void removeAllSongsFromPlaylist() {
-//
-//        User user = getUser(loggedUser);
-//
-//        user.getPlaylist().clear();
-//
-//        user.setPlaylist(user.getPlaylist());
-//
-//        this.userRepository.save(user);
-//    }
-//
-//    public String inMinutes(Long duration){
-//
-//        long min = duration/60;
-//        long sec = duration % 60;
-//
-//        return String.format("%02d:%02d", min, sec);
-//
-//    }
-//
-//    private Style extracted(StyleName styleName) {
-//        return this.styleRepository.findByName(styleName);
-//    }
-//
+
+    public Long getTotalTimeToPrepare() {
+        return this.orderRepository.findAll()
+                .stream()
+                .mapToLong(o -> o.getCategory().getNeededTime())
+                .sum();
+    }
+
+    private OrderViewDTO viewOrder(Order order) {
+
+        return OrderViewDTO.builder()
+                .id(order.getId())
+                .name(order.getName())
+                .price(order.getPrice())
+                .category(order.getCategory())
+                .build();
+    }
+    public Set<OrderViewDTO> getOrderByCategory(Category category) {
+        return this.orderRepository.findByCategory(category)
+                .stream()
+                .map(this::viewOrder)
+                .collect(Collectors.toSet());
+    }
+
+    public OrdersByCategory getAllOrders(){
+        return OrdersByCategory.builder()
+                .drinks(getOrderByCategory(extracted(CategoryName.DRINK)))
+                .cakes(getOrderByCategory(extracted(CategoryName.CAKE)))
+                .coffees(getOrderByCategory(extracted(CategoryName.COFFEE)))
+                .others(getOrderByCategory(extracted(CategoryName.OTHER)))
+                .build();
+    }
+
+    private EmployeesOrdersDTO viewEmployeesOrders(User user){
+        return EmployeesOrdersDTO.builder()
+                .employeeName(user.getUsername())
+                .numOfOrders(user.getOrders().size())
+                .build();
+    }
+
+    public Set<EmployeesOrdersDTO> getOrdersByEmployee() {
+
+        return this.userRepository.findAll()
+                .stream()
+                .map(this::viewEmployeesOrders)
+                .collect(Collectors.toSet());
+    }
+
+    public void addOrder(Long orderId) {
+
+        User user = getUser(loggedUser);
+        Order order = this.orderRepository.findById(orderId).orElseThrow();
+
+        user.addOrder(order);
+
+        this.userRepository.save(user);
+    }
+
+
+    public void removeOrder(Long orderId) {
+
+        User user = getUser(loggedUser);
+        Order order = this.orderRepository.findById(orderId).orElseThrow();
+
+        user.getOrders().remove(order);
+
+        this.orderRepository.delete(order);
+
+        this.userRepository.save(user);
+    }
+
+    public String inMinutes(Long duration){
+
+        long min = duration/60;
+        long sec = duration % 60;
+
+        return String.format("%02d:%02d", min, sec);
+
+    }
+
+    private Category extracted(CategoryName categoryName) {
+        return this.categoryRepository.findByName(categoryName).orElseThrow();
+    }
+
     private User getUser(LoggedUser loggedUser) {
         return this.userRepository.findById(loggedUser.getId()).orElseThrow();
     }

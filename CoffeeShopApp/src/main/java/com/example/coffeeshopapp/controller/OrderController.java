@@ -4,14 +4,13 @@ package com.example.coffeeshopapp.controller;
 import com.example.coffeeshopapp.model.dto.CreateOrderDTO;
 import com.example.coffeeshopapp.service.AuthService;
 import com.example.coffeeshopapp.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.validation.Valid;
 
 @Controller
 public class OrderController {

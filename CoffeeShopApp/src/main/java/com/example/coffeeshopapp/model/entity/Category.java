@@ -3,7 +3,7 @@ package com.example.coffeeshopapp.model.entity;
 import com.example.coffeeshopapp.model.enums.CategoryName;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Getter
 @Setter

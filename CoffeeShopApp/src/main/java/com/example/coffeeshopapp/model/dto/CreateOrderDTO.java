@@ -1,10 +1,10 @@
 package com.example.coffeeshopapp.model.dto;
 
 import com.example.coffeeshopapp.model.enums.CategoryName;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
