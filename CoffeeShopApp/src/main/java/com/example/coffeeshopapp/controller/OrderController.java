@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -55,6 +56,17 @@ public class OrderController {
 
             return "redirect:/orders/add";
         }
+        return "redirect:/home";
+    }
+
+    @GetMapping("/orders/remove/{id}")
+    public String getReady(@PathVariable Long id) {
+
+        if (!this.authService.isLoggedIn()) {
+            return "redirect:/";
+        }
+
+        this.orderService.removeOrder(id);
         return "redirect:/home";
     }
 }

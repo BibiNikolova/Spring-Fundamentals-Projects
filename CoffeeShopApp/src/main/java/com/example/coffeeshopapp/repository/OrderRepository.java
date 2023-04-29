@@ -11,7 +11,6 @@ import java.util.Set;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    Set<Order> findByCategory(Category category);
-
+    Set<Order> findAllByOrderByPriceDesc();
 }
 
