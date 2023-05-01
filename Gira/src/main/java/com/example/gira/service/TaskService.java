@@ -74,6 +74,7 @@ public class TaskService {
     }
 
     public void changeProgress(Long id) {
+
         Task task = this.taskRepo.findById(id).orElseThrow();
 
         switch (task.getProgress()) {

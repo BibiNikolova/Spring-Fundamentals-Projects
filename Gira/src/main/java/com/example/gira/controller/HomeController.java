@@ -23,10 +23,6 @@ public class HomeController {
         this.taskService = taskService;
     }
 
-    @ModelAttribute("taskViewDTO")
-    public TaskViewDTO initMyTaskVisualForm() {
-        return new TaskViewDTO();
-    }
 
     @GetMapping("/home")
     public String loggedInHome(Model model) {
@@ -50,14 +46,4 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/tasks/progress/{taskId}")
-    public String changeProgress(@PathVariable Long taskId) {
-
-        if (!this.authService.isLoggedIn()) {
-            return "redirect:/";
-        }
-
-        this.taskService.changeProgress(taskId);
-        return "redirect:/home";
-    }
 }

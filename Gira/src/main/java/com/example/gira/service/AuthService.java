@@ -73,12 +73,5 @@ public class AuthService {
         return this.userSession.getId() > 0;
     }
 
-    public long getLoggedUserId() {
-        return this.userSession.getId();
-    }
-
-    public User getById(Long id) {
-        return this.userRepo.findById(id).orElseThrow();
-    }
 }
 

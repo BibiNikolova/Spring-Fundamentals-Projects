@@ -33,6 +33,12 @@ public class TaskController {
         return new CreateTaskDTO();
     }
 
+    @ModelAttribute("taskViewDTO")
+    public TaskViewDTO initMyTaskVisualForm() {
+        return new TaskViewDTO();
+    }
+
+
     @GetMapping("/tasks/add")
     public String tasks() {
 
@@ -61,5 +67,15 @@ public class TaskController {
     }
 
 
+    @GetMapping("/tasks/progress/{taskId}")
+    public String changeProgress(@PathVariable Long taskId) {
+
+        if (!this.authService.isLoggedIn()) {
+            return "redirect:/";
+        }
+
+        this.taskService.changeProgress(taskId);
+        return "redirect:/home";
+    }
 
 }

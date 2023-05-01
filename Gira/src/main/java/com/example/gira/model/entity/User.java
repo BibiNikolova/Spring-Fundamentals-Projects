@@ -21,8 +21,10 @@ public class User {
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column(unique = true, nullable = false )
+    @Column(unique = true, nullable = false)
     private String email;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Task> tasks;
 
 }
 
