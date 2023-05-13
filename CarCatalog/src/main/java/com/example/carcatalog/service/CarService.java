@@ -1,7 +1,7 @@
 package com.example.carcatalog.service;
 
-import com.example.carcatalog.model.dto.CarSearchDTO;
-import com.example.carcatalog.model.dto.CreateCarDTO;
+import com.example.carcatalog.exception.CarNotFoundException;
+import com.example.carcatalog.model.dto.CreateUpdateCarDTO;
 import com.example.carcatalog.model.entity.Car;
 import com.example.carcatalog.model.entity.FuelType;
 import com.example.carcatalog.model.entity.Model;
@@ -28,46 +28,78 @@ public class CarService {
         this.carRepo = carRepo;
     }
 
-    public List<CarSearchDTO> getAllCars() {
-        return carRepo.findAll()//TODO: how to insert from db by price desc
+    public List<CreateUpdateCarDTO> getAllCars() {
+        return carRepo.findAll()
                 .stream()
                 .map(this::map)
                 .toList();
     }
 
-    private CarSearchDTO map(Car car) {
+    private CreateUpdateCarDTO map(Car car) {
 
-        return CarSearchDTO.builder()
+        return CreateUpdateCarDTO.builder()
                 .id(car.getId())
-                .model(car.getModel())
-                .brand(car.getModel().getBrand())
+                .modelName(car.getModel().getModelName())
+                .remarks(car.getRemarks())
                 .price(car.getPrice())
-                .fuelType(car.getFuelType())
+                .fuelTypeName(car.getFuelType().getFuelTypeName())
                 .registrationDate(car.getRegistrationDate())
-                .transmission(car.getTransmission())
+                .transmissionName(car.getTransmission().getTransmissionName())
                 .build();
     }
 
-    public long createCar(CreateCarDTO newCar) {
-        Model model = this.modelRepo.findByModelName(newCar.getModelName()).orElseThrow();
-        Transmission transmission = this.transmissionRepo.findByTransmissionName(newCar.getTransmissionName()).orElseThrow();
-        FuelType fuel = this.fuelTypeRepo.findByFuelTypeName(newCar.getFuelTypeName()).orElseThrow();
+    public long createCar(CreateUpdateCarDTO newCar) {
 
         Car car = Car.builder()
                 .vinNumber(newCar.getVinNumber())
-                .model(model)
+                .model(getModelName(newCar))
                 .price(newCar.getPrice())
                 .registrationDate(newCar.getRegistrationDate())
-                .transmission(transmission)
-                .fuelType(fuel)
+                .transmission(getTransmissionName(newCar))
+                .fuelType(getFuelTypeName(newCar))
                 .remarks(newCar.getRemarks())
                 .build();
 
         return this.carRepo.save(car).getId();
     }
 
+    private FuelType getFuelTypeName(CreateUpdateCarDTO car) {
+        return this.fuelTypeRepo.findByFuelTypeName(car.getFuelTypeName()).orElseThrow();
+    }
+
+    private Transmission getTransmissionName(CreateUpdateCarDTO car) {
+        return this.transmissionRepo.findByTransmissionName(car.getTransmissionName()).orElseThrow();
+    }
+
+    private Model getModelName(CreateUpdateCarDTO car) {
+        return this.modelRepo.findByModelName(car.getModelName()).orElseThrow();
+    }
+
+    public CreateUpdateCarDTO updateCar(Long id, CreateUpdateCarDTO updatedCar) {
+        Car car = carRepo.findById(id).orElseThrow(() -> new CarNotFoundException(id));
+        car.setVinNumber(updatedCar.getVinNumber());
+        car.setModel(getModelName(updatedCar));
+        car.setPrice(updatedCar.getPrice());
+        car.setRegistrationDate(updatedCar.getRegistrationDate());
+        car.setTransmission(getTransmissionName(updatedCar));
+        car.setFuelType(getFuelTypeName(updatedCar));
+        car.setRemarks(updatedCar.getRemarks());
+
+        this.carRepo.save(car);
+
+        return carRepo.findById(id)
+                .map(this::map).orElseThrow(() -> new CarNotFoundException(id));
+    }
+
     public void deleteById(Long id) {
         carRepo.deleteById(id);
+    }
+
+    public List<CreateUpdateCarDTO> searchCars(String query) {
+        return carRepo.searchCarsSQL(query)
+                .stream()
+                .map(this::map)
+                .toList();
     }
 
 }

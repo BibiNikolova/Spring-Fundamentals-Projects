@@ -17,7 +17,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateCarDTO {
+public class CreateUpdateCarDTO {
+
+    private Long id;
     @Size(min = 17, max = 17, message = "VIN Number should be 17 characters long.")
     @NotBlank
     private String vinNumber;
