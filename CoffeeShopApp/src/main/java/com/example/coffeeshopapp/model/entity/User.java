@@ -29,8 +29,5 @@ public class User {
     @OneToMany(mappedBy = "employee", fetch = FetchType.EAGER)
     private Set<Order> orders;
 
-    public void addOrder(Order order) {
-        this.orders.add(order);
-    }
 
 }
